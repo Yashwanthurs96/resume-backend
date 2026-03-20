@@ -9,9 +9,11 @@ app = FastAPI()
 import os
 from google import genai
 
-# "GOOGLE_API_KEY" is just a nickname for the secret.
-# os.environ.get looks for a variable with this NAME on Render.
+# We are telling Python: "Look for a secret labeled GEMINI_API_KEY"
 api_key = os.environ.get("AIzaSyAOb-e_XKex3Cn1w6Vf0AKZ9z48g7doOIM")
+
+if not api_key:
+    raise ValueError("API Key is missing! Check your Render Environment Variables.")
 
 client = genai.Client(api_key=api_key)
 # This allows your Website to talk to your Python code (Very Important!)
