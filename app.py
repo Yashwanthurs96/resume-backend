@@ -10,7 +10,7 @@ import os
 from google import genai
 
 # We are telling Python: "Look for a secret labeled GEMINI_API_KEY"
-api_key = os.environ.get("AIzaSyAOb-e_XKex3Cn1w6Vf0AKZ9z48g7doOIM")
+api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
     raise ValueError("API Key is missing! Check your Render Environment Variables.")
