@@ -1,24 +1,21 @@
-import pdfplumber
+import os
 import io
+import pdfplumber
 from fastapi import FastAPI, UploadFile, File
 from google import genai
 from fastapi.middleware.cors import CORSMiddleware
 
-# --- 1. SETUP THE BRAIN ---
+# --- 1. SETUP ---
 app = FastAPI()
-import os
-from google import genai
 
-# We use the NICKNAME "GEMINI_API_KEY". 
-# We do NOT put the actual "AIza..." string here.
+# This looks for the secret key you set in the Render Dashboard
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key:
-    # This helps you debug if Render isn't sending the key
-    print("ERROR: GEMINI_API_KEY environment variable not found!")
+    print("⚠️ WARNING: GEMINI_API_KEY is not set in Environment Variables!")
 
 client = genai.Client(api_key=api_key)
-# This allows your Website to talk to your Python code (Very Important!)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,27 +23,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- 2. THE "UPLOAD" GATEWAY ---
+# --- 2. ROUTES ---
+
 @app.get("/")
+@app.head("/")  # This stops the "405 Method Not Allowed" error in Render logs
 def home():
     return {"status": "The Brain is Awake and Healthy!"}
+
 @app.post("/analyze")
 async def analyze_resume(file: UploadFile = File(...)):
     # Read the uploaded PDF file
     pdf_content = await file.read()
     
-    # Use pdfplumber to read the text from memory
+    # Extract text from PDF
+    text = ""
     with pdfplumber.open(io.BytesIO(pdf_content)) as pdf:
-        text = ""
         for page in pdf.pages:
-            text += page.extract_text()
+            text += page.extract_text() or ""
 
-    # Send it to Gemini
-    # Send it to Gemini with STRICT formatting rules
-    # NEW PROMPT: Ask for deep, detailed explanations
-    # NEW PROMPT: Strictly forbid tables and enforce clean text
+    # Send to Gemini
+    # Note: Using 'gemini-2.0-flash' for stability
     response = client.models.generate_content(
-        model="gemini-2.5-flash", 
+        model="gemini-2.0-flash", 
         contents=f"""You are a Senior Technical Recruiter. Analyze this resume. 
         
         CRITICAL RULES:
@@ -55,25 +53,22 @@ async def analyze_resume(file: UploadFile = File(...)):
         
         Format exactly like this:
         ## 📊 Comprehensive Evaluation: [Score]/100
-        (Write your detailed paragraph of 2-3 sentences here)
+        (Detailed paragraph here)
 
         ### 🌟 Expert-Identified Strengths
-        * **[Strength 1]:** (Write 1 sentences of deep analysis)
-        * **[Strength 2]:** (Write 1 sentences of deep analysis)
-        * **[Strength 3]:** (Write 1 sentences of deep analysis)
+        * **[Strength 1]:** (Deep analysis)
+        * **[Strength 2]:** (Deep analysis)
+        * **[Strength 3]:** (Deep analysis)
 
         ### 🛠️ Strategic Improvements
-        * **[Fix 1]:** (Write a detailed explanation of 2 sentences of what to fix and why)
-        * **[Fix 2]:** (Write a detailed explanation of 2 sentences of what to fix and why)
-        * **[Fix 3]:** (Write a detailed explanation of 2 sentences of what to fix and why)
+        * **[Fix 1]:** (What to fix and why)
+        * **[Fix 2]:** (What to fix and why)
+        * **[Fix 3]:** (What to fix and why)
 
         ### 💡 Interview Preparation Strategy
-        (Write your final paragraph of 2-3 sentences here)
+        (Final paragraph here)
 
         Resume text: {text}"""
     )
-    # Send the result back to the website
+    
     return {"analysis": response.text}
-
-# --- 3. RUN COMMAND ---
-# To run this, type: uvicorn app:app --reload
