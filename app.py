@@ -44,7 +44,7 @@ async def analyze_resume(file: UploadFile = File(...)):
     # Send to Gemini
     # Note: Using 'gemini-2.0-flash' for stability
     response = client.models.generate_content(
-        model="gemini-2.0-flash", 
+        model="gemini-1.5-flash", 
         contents=f"""You are a Senior Technical Recruiter. Analyze this resume. 
         
         CRITICAL RULES:
