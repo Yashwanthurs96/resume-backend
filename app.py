@@ -23,9 +23,6 @@ app.add_middleware(
 @app.get("/")
 def home():
     return {"status": "The Brain is Awake and Healthy!"}
-@app.get("/")
-def home():
-    return {"status": "The Brain is Awake and Healthy!"}
 @app.post("/analyze")
 async def analyze_resume(file: UploadFile = File(...)):
     # Read the uploaded PDF file
