@@ -6,11 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # --- 1. SETUP THE BRAIN ---
 app = FastAPI()
-import os # Make sure this is at the very top of your file!
+import os
+from google import genai
 
-# Replace your client line with this:
-client = genai.Client(api_key=os.environ.get("AIzaSyCr_iJ0S0jwqkCygTT_yctQVvLrTSX3XRo"))
+# "GOOGLE_API_KEY" is just a nickname for the secret.
+# os.environ.get looks for a variable with this NAME on Render.
+api_key = os.environ.get("AIzaSyAOb-e_XKex3Cn1w6Vf0AKZ9z48g7doOIM")
 
+client = genai.Client(api_key=api_key)
 # This allows your Website to talk to your Python code (Very Important!)
 app.add_middleware(
     CORSMiddleware,
