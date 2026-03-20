@@ -20,6 +20,9 @@ app.add_middleware(
 )
 
 # --- 2. THE "UPLOAD" GATEWAY ---
+@app.get("/")
+def home():
+    return {"status": "The Brain is Awake and Healthy!"}
 @app.post("/analyze")
 async def analyze_resume(file: UploadFile = File(...)):
     # Read the uploaded PDF file
