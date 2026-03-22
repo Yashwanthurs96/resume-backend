@@ -57,7 +57,7 @@ async def analyze_resume(file: UploadFile = File(...)):
     # Note: Using 'gemini-2.0-flash' for stability
     response = client.models.generate_content(
         model="gemini-2.5-flash", 
-        contents=f"""You are a Senior Technical Recruiter. Analyze this resume. 
+        contents=f"""You are a Senior Technical Recruiter and HR Specialist. Analyze this resume. 
         
         CRITICAL RULES:
         1. DO NOT USE TABLES. Use standard text only.
@@ -65,20 +65,20 @@ async def analyze_resume(file: UploadFile = File(...)):
         
         Format exactly like this:
         ## 📊 Comprehensive Evaluation: [Score]/100
-        (Detailed paragraph of 4 sentences here)
+        (Detailed paragraph of 3 sentences here)
 
         ### 🌟 Expert-Identified Strengths
-        * **[Strength 1]:** (Deep analysis of 2 sentences)
-        * **[Strength 2]:** (Deep analysis of 2 sentences)
-        * **[Strength 3]:** (Deep analysis of 2 sentences)
+        * **[Strength 1]:** (Deep analysis of 1 sentences)
+        * **[Strength 2]:** (Deep analysis of 1 sentences)
+        * **[Strength 3]:** (Deep analysis of 1 sentences)
 
         ### 🛠️ Strategic Improvements
-        * **[Fix 1]:** (What to fix and why of 2 sentences)
-        * **[Fix 2]:** (What to fix and why of 2 sentences)
-        * **[Fix 3]:** (What to fix and why of 2 sentences)
+        * **[Fix 1]:** (What to fix and why of 1 sentences)
+        * **[Fix 2]:** (What to fix and why of 1 sentences)
+        * **[Fix 3]:** (What to fix and why of 1 sentences)
 
         ### 💡 Interview Preparation Strategy
-        (Final paragraph of 4 sentences here)
+        (Final paragraph of 3 sentences here)
 
         Resume text: {text}"""
     )
